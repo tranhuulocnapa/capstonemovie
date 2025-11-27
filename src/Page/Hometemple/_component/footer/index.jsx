@@ -127,7 +127,7 @@ export default function Footer() {
 
             {/* Bottom */}
             <div className="border-t border-default text-center py-6 text-body text-sm">
-                © 2025 Movie In Hands – All Rights Reserved.
+                © 2025 Movie Capstone – All Rights Reserved.
             </div>
         </footer>
     );

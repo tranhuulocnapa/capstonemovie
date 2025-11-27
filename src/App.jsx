@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Admin from './Page/Admin';
 import Hometemple from './Page/Hometemple';
 import Home from './Page/Hometemple/Home';
+import DetailMovie from './Page/Hometemple/DetailMovie';
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="" element={<Hometemple />} >
           <Route path="" element={<Home />} />
+          <Route path="detail/:bidanh" element={<DetailMovie />} />
 
 
         </Route>

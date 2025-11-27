@@ -1,0 +1,29 @@
+import './App.css'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Admin from './Page/Admin';
+import Hometemple from './Page/Hometemple';
+import Home from './Page/Hometemple/Home';
+
+function App() {
+
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="" element={<Hometemple />} >
+          <Route path="" element={<Home />} />
+
+
+        </Route>
+
+        <Route path="admin" element={<Admin />} />
+
+
+      </Routes>
+    </BrowserRouter>
+
+
+  )
+}
+
+export default App

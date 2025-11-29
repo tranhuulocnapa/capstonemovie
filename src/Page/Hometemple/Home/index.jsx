@@ -10,7 +10,6 @@ export default function Home() {
 
     useEffect(() => {
         dispatch(fetchdata())
-
     }, [])
 
     const renderMovie = () => {

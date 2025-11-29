@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from "react-router-dom";
 
 export default function Moive(props) {
     const { data } = props
@@ -23,12 +24,11 @@ export default function Moive(props) {
                     </button>
 
                     <button className="px-7 py-2 bg-white/10 border border-white text-white font-medium rounded-xl hover:bg-white hover:text-black hover:scale-105 transition">
-                        Chi tiết
+                        <Link to={`/detail/${data.maPhim}`}>
+                            Chi tiết
+                        </Link>
                     </button>
 
-                    <button className="px-7 py-2 bg-white/10 border border-white text-white font-medium rounded-xl hover:bg-white hover:text-black hover:scale-105 transition">
-                        Trailer
-                    </button>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@ export default function Moive(props) {
                     {data.tenPhim}
                 </h3>
             </div>
-        </div>
+        </div >
 
 
 

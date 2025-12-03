@@ -4,6 +4,7 @@ import Admin from './Page/Admin';
 import Hometemple from './Page/Hometemple';
 import Home from './Page/Hometemple/Home';
 import DetailMovie from './Page/Hometemple/DetailMovie';
+import BookingMovie from './Page/Hometemple/DetailMovie/bookingMovie';
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="" element={<Hometemple />} >
           <Route path="" element={<Home />} />
           <Route path="detail/:maPhim" element={<DetailMovie />} />
+          <Route path="booking/:maLichChieu" element={<BookingMovie />} />
 
 
         </Route>

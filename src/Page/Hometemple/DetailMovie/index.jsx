@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { fetchDetailMovie } from './slice';
+import { Link } from "react-router-dom";
 
 export default function DetailMovie() {
     const [activeSystem, setActiveSystem] = useState(0);
@@ -142,7 +143,7 @@ export default function DetailMovie() {
                         {/* ======= TUẦN HIỆN TẠI (THỨ 2 → CN) ======= */}
                         <div className="bg-white rounded-xl shadow p-4 mb-6 border">
                             <h4 className="font-semibold mb-3 text-lg">Lịch chiếu theo ngày</h4>
-                            
+
                             <div className="flex gap-5 overflow-x-auto">
                                 {dateList.map((d, idx) => (
                                     <div
@@ -185,7 +186,9 @@ export default function DetailMovie() {
                                                     <button
                                                         className="mt-1 border px-4 py-2 rounded-lg bg-white hover:bg-red-600 hover:text-white transition"
                                                     >
-                                                        {time}
+                                                        <Link to={`/booking/${lich.maLichChieu}`}>
+                                                            {time}
+                                                        </Link>
                                                     </button>
                                                 </div>
                                             );

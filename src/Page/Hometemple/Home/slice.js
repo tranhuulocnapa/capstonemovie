@@ -18,9 +18,17 @@ export const fetchdata = createAsyncThunk("listmovie", async (__, { rejectWithVa
         //         TokenCybersoft: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCA5MCIsIkhldEhhblN0cmluZyI6IjI5LzA1LzIwMjYiLCJIZXRIYW5UaW1lIjoiMTc4MDAxMjgwMDAwMCIsIm5iZiI6MTc1MzAzMDgwMCwiZXhwIjoxNzgwMTYwNDAwfQ.KkGRtLpEsgoM4M_TapjOZIzvAwbay3QvXIwwN8XUqWk"
         //     },
         // })
-        const result = await api.get("QuanLyPhim/LayDanhSachPhim?maNhom=GP01")
+        const movies = await api.get("QuanLyPhim/LayDanhSachPhim?maNhom=GP01")
+        const cinemaSystems = await api.get("QuanLyRap/LayThongTinHeThongRap")
+        const hethongrap = await api.get("QuanLyRap/LayThongTinLichChieuHeThongRap?maNhom=GP01")
 
-        return result.data.content;
+
+        return {
+            movies: movies.data.content,
+            cinemaSystems: cinemaSystems.data.content,
+            hethongrap: hethongrap.data.content,
+        }
+
     } catch (error) {
         return rejectWithValue(error)
     }

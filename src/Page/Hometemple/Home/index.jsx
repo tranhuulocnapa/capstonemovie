@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import Moive from './Moive'
 import { fetchdata } from "./slice"
 import { useDispatch, useSelector } from 'react-redux'
-import CinemaShowtimeUI from './lichchieuphim'
+import CinemaShowtimeUI from './CinemaShowtimeUI'
 
 
 export default function Home() {
@@ -14,8 +14,10 @@ export default function Home() {
     }, [])
 
     const renderMovie = () => {
-        const { data } = state;
-        return data?.map((movie) => <Moive key={movie.maPhim} data={movie} />)
+        if (!state.data) return null; // tránh crash
+
+        const { movies } = state.data;
+        return movies?.map((movie) => <Moive key={movie.maPhim} data={movie} />)
 
     }
 

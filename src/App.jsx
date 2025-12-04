@@ -5,9 +5,11 @@ import Hometemple from './Page/Hometemple';
 import Home from './Page/Hometemple/Home';
 import DetailMovie from './Page/Hometemple/DetailMovie';
 import BookingMovie from './Page/Hometemple/booking/index';
+import Login from './Page/Hometemple/login/dangnhap';
+import Register from './Page/Hometemple/login/dangky';
+
 
 function App() {
-
 
   return (
     <BrowserRouter>
@@ -17,17 +19,16 @@ function App() {
           <Route path="detail/:maPhim" element={<DetailMovie />} />
           <Route path="booking/:maLichChieu" element={<BookingMovie />} />
 
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
 
         </Route>
 
         <Route path="admin" element={<Admin />} />
 
-
       </Routes>
     </BrowserRouter>
 
-
   )
 }
-
 export default App

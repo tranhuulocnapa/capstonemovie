@@ -1,145 +1,141 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setcomfirmBooking } from "./slice"
+import { bookinglMovie, setcomfirmBooking } from "./slice";
 import Seats from "./seats";
-import { bookinglMovie } from "./slice"
 import { useParams } from "react-router-dom";
 
 export default function BookingMovie() {
-    const selectedSeats = useSelector((state) => state.bookingMovieslice);
     const dispatch = useDispatch();
+    const { data, selectedSeats } = useSelector((state) => state.bookingMovieslice);
 
     const [customerName, setCustomerName] = useState("");
     const [openModal, setOpenModal] = useState(false);
 
-    const totalPrice = selectedSeats.reduce((sum, seat) => sum + seat.setPrice, 0);
+    const totalPrice = selectedSeats.reduce((sum, seat) => sum + seat.giaVe, 0);
 
-    const params = useParams();
-    const { maLichChieu } = params;
+    const { maLichChieu } = useParams();
 
     useEffect(() => {
-        dispatch(bookinglMovie(maLichChieu));
-    }, [maPhim]);
+        if (maLichChieu) dispatch(bookinglMovie(maLichChieu));
+    }, [maLichChieu]);
 
     return (
         <>
-            <div className="md:w-1/3 w-full space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 border-b pb-2 border-gray-300">
-                    Thông Tin Đặt Vé
-                </h2>
 
-                <div>
-                    <label className="block text-sm font-medium mb-1 text-gray-700">
-                        Tên của bạn
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Nhập tên của bạn"
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                    />
-                </div>
+            <div className="w-full max-w-7xl mx-auto mt-10 px-4 flex flex-col md:flex-row gap-10">
 
-                <div>
-                    <p className="font-medium text-gray-700">Tổng cộng:</p>
-                    <p className="text-3xl font-semibold text-blue-600">
-                        {totalPrice.toLocaleString("vi-VN")} ₫
-                    </p>
-                </div>
+                {/* --- Cột trái: Thông tin đặt vé --- */}
+                <div className="md:w-1/3 w-full bg-white p-6 rounded-xl shadow-lg border space-y-6">
+                    <h2 className="text-2xl font-bold text-gray-800 border-b pb-3">
+                        Thông Tin Đặt Vé
+                    </h2>
 
-                <button
-                    className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    onClick={() => {
-                        if (selectedSeats.length === 0) {
-                            alert("Bạn chưa chọn ghế nào!");
-                            return;
-                        }
-                        setOpenModal(true);
-                    }}
-                >
-                    Xác Nhận Đặt Vé
-                </button>
+                    {data && (
+                        <div className="space-y-2 text-gray-700">
+                            <p><strong>Phim:</strong> {data.thongTinPhim.tenPhim}</p>
+                            <p><strong>Rạp:</strong> {data.thongTinPhim.tenCumRap} – {data.thongTinPhim.tenRap}</p>
+                            <p><strong>Ngày chiếu:</strong> {data.thongTinPhim.ngayChieu}</p>
+                            <p><strong>Giờ chiếu:</strong> {data.thongTinPhim.gioChieu}</p>
+                        </div>
+                    )}
 
-                {/* Danh sách ghế */}
-                <div className="border-t border-gray-300 pt-4">
-                    <h3 className="font-semibold mb-3 text-gray-800 text-lg">Ghế đã chọn:</h3>
-                    <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">
-                        {selectedSeats.length > 0 ? (
-                            selectedSeats.map((seat) => (
-                                <div
-                                    key={seat.seatNumber}
-                                    className="flex justify-between items-center bg-green-50 border border-green-200 rounded-md px-3 py-2 text-sm"
-                                >
-                                    <span className="font-semibold text-gray-700">
-                                        {seat.seatNumber}
-                                    </span>
-                                    <span className="text-green-700 font-medium">
-                                        {seat.setPrice.toLocaleString("vi-VN")} ₫
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500 italic">Chưa chọn ghế nào</p>
-                        )}
+                    {/* <div>
+                        <label className="block text-sm font-medium mb-1">Tên của bạn</label>
+                        <input
+                            type="text"
+                            placeholder="Nhập tên của bạn"
+                            className="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300"
+                            value={customerName}
+                            onChange={(e) => setCustomerName(e.target.value)}
+                        />
+                    </div> */}
+
+                    <div>
+                        <p className="font-medium">Tổng cộng:</p>
+                        <p className="text-3xl font-semibold text-blue-600">
+                            {totalPrice.toLocaleString("vi-VN")} ₫
+                        </p>
+                    </div>
+
+                    <button
+                        className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        onClick={() => {
+                            if (!selectedSeats.length) {
+                                alert("Bạn chưa chọn ghế!");
+                                return;
+                            }
+                            setOpenModal(true);
+                        }}
+                    >
+                        Xác Nhận Đặt Vé
+                    </button>
+
+                    <div className="border-t pt-4 flex flex-col h-full">
+                        <h3 className="font-semibold mb-3 text-lg">Ghế đã chọn:</h3>
+                        <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-2 custom-scroll">
+                            {selectedSeats.length ? (
+                                selectedSeats.map((seat) => (
+                                    <div
+                                        key={seat.maGhe}
+                                        className="flex justify-between bg-green-50 border rounded-md px-3 py-2"
+                                    >
+                                        <span>{seat.tenGhe}</span>
+                                        <span>{seat.giaVe.toLocaleString("vi-VN")} ₫</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 italic">Chưa chọn ghế nào</p>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* MODAL*/}
-            {openModal && (
-                <div
-                    className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50"
-                    onClick={() => setOpenModal(false)}
-                >
+                {/* --- Cột phải: Ghế --- */}
+                <div className="flex-1 bg-white p-6 rounded-xl shadow-lg border">
+                    <Seats />
+                </div>
 
+                {openModal && (
                     <div
-                        className="bg-white w-[400px] rounded-xl shadow-lg p-6"
-                        onClick={(e) => e.stopPropagation()} // chặn tắt khi click trong modal
+                        className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center"
+                        onClick={() => setOpenModal(false)}
                     >
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                            Thông Tin Vé Đã Đặt
-                        </h2>
+                        <div
+                            className="bg-white w-[400px] rounded-xl p-6"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h2 className="text-xl font-bold text-center mb-4">Thông Tin Vé</h2>
 
+                            <p><strong>Tên khách hàng:</strong> {customerName}</p>
+                            <p><strong>Ghế:</strong> {selectedSeats.map(s => s.tenGhe).join(", ")}</p>
 
-                        <p className="text-gray-700 mb-2">
-                            <span className="font-semibold">Tên khách hàng:</span>{" "}
-                            {customerName || "Chưa nhập"}
-                        </p>
+                            <p className="text-lg font-bold mt-4">
+                                Tổng tiền: {totalPrice.toLocaleString("vi-VN")} ₫
+                            </p>
 
-                        <p className="text-gray-700 mb-2">
-                            <span className="font-semibold">Ghế đã chọn:</span>{" "}
-                            {selectedSeats.map((s) => s.seatNumber).join(", ")}
-                        </p>
-
-                        <p className="text-gray-700 mb-2">
-                            <span className="font-semibold">Giá vé:</span>{" "}
-                            {selectedSeats[0]?.setPrice?.toLocaleString("vi-VN")} ₫
-                        </p>
-
-                        <p className="text-gray-900 font-bold text-lg mb-6">
-                            Tổng tiền: {totalPrice.toLocaleString("vi-VN")} ₫
-                        </p>
-
-                        <div className="flex justify-center mt-6">
                             <button
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                                className="w-full bg-blue-600 text-white mt-6 py-2 rounded-lg hover:bg-blue-700"
                                 onClick={() => {
                                     alert("Thanh toán thành công!");
-                                    setOpenModal(false);
-                                    { dispatch(setcomfirmBooking(selectedSeats)) }
 
+                                    dispatch(setcomfirmBooking({
+                                        maLichChieu,
+                                        danhSachVe: selectedSeats.map(seat => ({
+                                            maGhe: seat.maGhe,
+                                            giaVe: seat.giaVe
+                                        })),
+                                    }));
+
+                                    setOpenModal(false);
                                 }}
                             >
                                 Thanh toán
                             </button>
-
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
-            <Seats />
         </>
     );
 }

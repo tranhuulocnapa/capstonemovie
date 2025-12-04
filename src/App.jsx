@@ -4,7 +4,7 @@ import Admin from './Page/Admin';
 import Hometemple from './Page/Hometemple';
 import Home from './Page/Hometemple/Home';
 import DetailMovie from './Page/Hometemple/DetailMovie';
-import BookingMovie from './Page/Hometemple/DetailMovie/bookingMovie';
+import BookingMovie from './Page/Hometemple/booking/index';
 
 function App() {
 

@@ -1,47 +1,68 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../../service/api";
 
-const initialState = {
-    loading: false,
-    data: null,
-    error: null,
-};
-export const registerMovie = createAsyncThunk(
-    "user/registerMovie",
-    async (data, thunkAPI) => {
+// Đăng nhập
+export const loginUser = createAsyncThunk(
+    "user/loginUser",
+    async (payload, thunkAPI) => {
         try {
-            const res = await axios.post(
-                "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/DangKy",
-                data
-            );
-            return res.data;
+            const res = await api.post("QuanLyNguoiDung/DangNhap", payload);
+            return res.data.content; // API trả về { content: {...} }
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response.data);
+            return thunkAPI.rejectWithValue(
+                err.response?.data?.content || "Đăng nhập thất bại"
+            );
         }
     }
 );
 
+// Đăng ký
+export const dangKyThunk = createAsyncThunk(
+    "user/dangKyThunk",
+    async (payload, thunkAPI) => {
+        try {
+            const res = await api.post("QuanLyNguoiDung/DangKy", payload);
+            return res.data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(
+                err.response?.data?.content || "Đăng ký thất bại"
+            );
+        }
+    }
+);
 
-const registerMovieslice = createSlice({
-    name: "register",
-    initialState,
-    reducers: {},
-
+const userSlice = createSlice({
+    name: "user",
+    initialState: {
+        loading: false,
+        error: null,
+        userInfo: JSON.parse(localStorage.getItem("user")) || null,
+    },
+    reducers: {
+        logout: (state) => {
+            state.userInfo = null;
+            localStorage.removeItem("user");
+        },
+    },
     extraReducers: (builder) => {
         builder
-            .addCase(registerMovie.pending, (state) => {
+            .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registerMovie.fulfilled, (state, action) => {
+            .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.data = action.payload;
+                state.userInfo = action.payload;
+
+                // Lưu localStorage
+                localStorage.setItem("user", JSON.stringify(action.payload));
             })
-            .addCase(registerMovie.rejected, (state, action) => {
+            .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
     },
 });
 
-export default registerMovieslice.reducer;
+export const { logout } = userSlice.actions;
+export default userSlice.reducer;

@@ -1,11 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutAction } from "./../../login/slice"; 
 
 export default function Navbar() {
     const [openUserMenu, setOpenUserMenu] = useState(false);
     const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
     const userMenuRef = useRef(null);
+    const dispatch = useDispatch();
+
+    // 🟢 Lấy userLogin từ Redux
+    const userLogin = useSelector((state) => state.user.userLogin);
 
     // CLICK OUTSIDE
     useEffect(() => {
@@ -21,6 +27,12 @@ export default function Navbar() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    // 🟢 Xử lý đăng xuất
+    const handleLogout = () => {
+        dispatch(logoutAction());
+        setOpenUserMenu(false);
+    };
 
     return (
         <nav className="bg-neutral-primary w-full z-20 top-0 start-0 border-b border-default">
@@ -42,7 +54,7 @@ export default function Navbar() {
                 <div className="flex items-center md:order-2 space-x-3">
 
                     {/* Avatar + Dropdown Wrapper */}
-                    <div ref={userMenuRef} className="relative">   {/* ← đặt ref đúng chỗ */}
+                    <div ref={userMenuRef} className="relative">
 
                         {/* Avatar Button */}
                         <button
@@ -59,29 +71,49 @@ export default function Navbar() {
 
                         {/* Dropdown */}
                         {openUserMenu && (
-                            <div
-                                className="absolute top-full right-0 mt-2 z-50 bg-white border rounded-xl shadow-lg w-44"
-                            >
+                            <div className="absolute top-full right-0 mt-2 z-50 bg-white border rounded-xl shadow-lg w-48">
                                 <ul className="py-2">
-                                    <li>
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setOpenUserMenu(false)}
-                                            className="block px-4 py-2 hover:bg-gray-100"
-                                        >
-                                            Đăng nhập
-                                        </Link>
-                                    </li>
 
-                                    <li>
-                                        <Link
-                                            to="/register"
-                                            onClick={() => setOpenUserMenu(false)}
-                                            className="block px-4 py-2 hover:bg-gray-100"
-                                        >
-                                            Đăng ký
-                                        </Link>
-                                    </li>
+                                    {/* 🟢 Nếu đã đăng nhập → hiện HoTen + Đăng xuất */}
+                                    {userLogin ? (
+                                        <>
+                                            <li className="px-4 py-2 text-gray-700 font-semibold">
+                                                👋 Xin chào, {userLogin.hoTen}
+                                            </li>
+
+                                            <li>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                    Đăng xuất
+                                                </button>
+                                            </li>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* 🟢 Nếu chưa đăng nhập → hiện Login + Register */}
+                                            <li>
+                                                <Link
+                                                    to="/login"
+                                                    onClick={() => setOpenUserMenu(false)}
+                                                    className="block px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                    Đăng nhập
+                                                </Link>
+                                            </li>
+
+                                            <li>
+                                                <Link
+                                                    to="/register"
+                                                    onClick={() => setOpenUserMenu(false)}
+                                                    className="block px-4 py-2 hover:bg-gray-100"
+                                                >
+                                                    Đăng ký
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
                                 </ul>
                             </div>
                         )}
@@ -100,9 +132,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Menu Items */}
-                <div
-                    className={`${openMobileMenu ? "block" : "hidden"} w-full md:flex md:w-auto md:order-1`}
-                >
+                <div className={`${openMobileMenu ? "block" : "hidden"} w-full md:flex md:w-auto md:order-1`}>
                     <ul className="font-medium flex flex-col p-4 md:flex-row md:space-x-8 mt-4 md:mt-0">
                         <li>
                             <NavLink

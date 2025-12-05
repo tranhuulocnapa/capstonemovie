@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "./slice";
 
 export default function Login() {
     const [form, setForm] = useState({
@@ -7,43 +9,27 @@ export default function Login() {
         matKhau: "",
     });
 
-    const [errors, setErrors] = useState({}); // Lỗi validate
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const loading = useSelector(state => state.user?.loading);
+    const error = useSelector(state => state.user?.error);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // Validate login
-    const validate = () => {
-        let newErrors = {};
-
-        if (!form.taiKhoan.trim()) {
-            newErrors.taiKhoan = "Tài khoản không được bỏ trống";
-        } else if (/\s/.test(form.taiKhoan)) {
-            newErrors.taiKhoan = "Tài khoản không được chứa khoảng trắng";
-        }
-
-        if (!form.matKhau.trim()) {
-            newErrors.matKhau = "Mật khẩu không được bỏ trống";
-        } else if (form.matKhau.length < 6) {
-            newErrors.matKhau = "Mật khẩu phải ít nhất 6 ký tự";
-        }
-
-        setErrors(newErrors);
-
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validate()) {
-            console.log("Form login lỗi!");
-            return;
-        }
+        const res = await dispatch(loginUser(form));
 
-        console.log("Login Data:", form);
-        alert("Đăng nhập thành công (console log)!");
+        if (loginUser.fulfilled.match(res)) {
+            alert("Đăng nhập thành công!");
+            navigate("/");
+
+            
+        }
     };
 
     return (
@@ -52,41 +38,39 @@ export default function Login() {
                 <h2 className="text-3xl font-bold text-center mb-6">Đăng nhập</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-
-                    {/* Tài khoản */}
                     <div>
                         <label className="block mb-1 font-medium">Tài khoản</label>
                         <input
                             name="taiKhoan"
                             value={form.taiKhoan}
                             onChange={handleChange}
+                            className="w-full p-3 border rounded-lg"
                             type="text"
-                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                             placeholder="Nhập tài khoản..."
                         />
-                        {errors.taiKhoan && (
-                            <p className="text-red-600 text-sm mt-1">{errors.taiKhoan}</p>
-                        )}
                     </div>
 
-                    {/* Mật khẩu */}
                     <div>
                         <label className="block mb-1 font-medium">Mật khẩu</label>
                         <input
                             name="matKhau"
                             value={form.matKhau}
                             onChange={handleChange}
+                            className="w-full p-3 border rounded-lg"
                             type="password"
-                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                             placeholder="Nhập mật khẩu..."
                         />
-                        {errors.matKhau && (
-                            <p className="text-red-600 text-sm mt-1">{errors.matKhau}</p>
-                        )}
                     </div>
 
-                    <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                        Đăng nhập
+                    {error && (
+                        <p className="text-red-500 text-center">{error}</p>
+                    )}
+
+                    <button
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-3 rounded-lg"
+                    >
+                        {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                     </button>
                 </form>
 

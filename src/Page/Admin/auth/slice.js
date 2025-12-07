@@ -1,9 +1,12 @@
 import { createAsyncThunk, createSlice, isRejectedWithValue } from "@reduxjs/toolkit";
 import api from "../../../service/api";
 
+const userinfoString = localStorage.getItem("user_admin")
+const data = userinfoString ? JSON.parse(userinfoString) : null
+
 const initialState = {
     loading: false,
-    data: null,
+    data: data, //giong nhau de data cung duoc
     error: null,
 }
 
@@ -23,6 +26,9 @@ export const authService = createAsyncThunk("auth/login", async (user, { rejectW
                 }
             })
         }
+
+        const userString = JSON.stringify(response.data.content)
+        localStorage.setItem("user_admin", userString)
 
         return response.data.content
     } catch (error) {

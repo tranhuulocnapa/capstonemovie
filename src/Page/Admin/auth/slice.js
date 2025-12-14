@@ -10,11 +10,9 @@ const initialState = {
     error: null,
 }
 
-
 export const authService = createAsyncThunk("auth/login", async (user, { rejectWithValue }) => {
     try {
         const response = await api.post("QuanLyNguoiDung/DangNhap", user)
-
 
         const roloes = response.data.content.maLoaiNguoiDung
         if (roloes === "KhachHang") {
@@ -34,15 +32,17 @@ export const authService = createAsyncThunk("auth/login", async (user, { rejectW
     } catch (error) {
         return rejectWithValue(error)
     }
-
-
 })
-
 
 const authslice = createSlice({
     name: "authslice",
     initialState,
-    reducers: {},
+    reducers: {
+        logout(state) {
+            state.data = null;
+            localStorage.removeItem("user_admin");
+        }
+    },
 
     extraReducers: (builder) => {
         builder
@@ -61,6 +61,6 @@ const authslice = createSlice({
     }
 })
 
-
+export const { logout } = authslice.actions;
 
 export default authslice.reducer

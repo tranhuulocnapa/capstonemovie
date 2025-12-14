@@ -1,28 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FilmTable from "./FilmTable";
+import { useDispatch, useSelector } from "react-redux";
+import { film } from "./slice";
+import { Link } from "react-router-dom";
 
 
 const FilmManagement = () => {
+    const dispatch = useDispatch();
+    const listfilm = useSelector((state) => state.filmslice.data || [])
+
     const [search, setSearch] = useState("");
 
-    const films = [
-        { id: 1314, title: "Mỹ Toàn", description: "Phim hay quá", image: "/img/1.jpg" },
-        { id: 1329, title: "Bố Già Rồi", description: "Tui cười rồi nên tui biết", image: "/img/2.jpg" },
-        { id: 1344, title: "Avenger", description: "Giam Mục Bóng Tối", image: "/img/3.jpg" },
-    ];
-
-    const filtered = films.filter((film) =>
-        film.title.toLowerCase().includes(search.toLowerCase())
+    const filtered = listfilm.filter((film) =>
+        film.tenPhim.toLowerCase().includes(search.toLowerCase())
     );
+
+
+    useEffect(() => {
+        dispatch(film());
+    }, []);
 
     return (
         <div className="flex-1 p-8">
             <h1 className="text-2xl font-bold mb-6">Quản lý Phim</h1>
 
             <div className="flex justify-between items-center mb-4">
-                <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                <Link to="/admin/addfilm" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
                     Thêm phim
-                </button>
+                </Link>
 
                 <input
                     type="text"

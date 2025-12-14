@@ -3,8 +3,6 @@ import { authService } from "./slice.js"
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-
-
 const Auth = () => {
     const dispatch = useDispatch()
     const authstate = useSelector((state) => state.authslice)
@@ -53,11 +51,6 @@ const Auth = () => {
         // }
     };
 
-    const isDisabled =
-        !form.taiKhoan ||
-        !form.matKhau ||
-        errors.taiKhoan ||
-        errors.matKhau;
 
     if (data) {
         return <Navigate to="/admin" />
@@ -117,12 +110,7 @@ const Auth = () => {
                 {/* BUTTON */}
                 <button
                     type="submit"
-                    disabled={isDisabled}
-                    className={`w-full py-2 text-white rounded transition 
-            ${isDisabled
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-blue-600 hover:bg-blue-700"
-                        }`}
+                    className="w-full bg-green-600 text-white py-3 rounded-lg"
                 >
                     Đăng nhập
                 </button>

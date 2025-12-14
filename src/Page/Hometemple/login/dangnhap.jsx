@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate } from "react-router-dom";
+import { loginMovie } from "./slice"
 
 export default function Login() {
+    const dispatch = useDispatch()
+    const loginstate = useSelector((state) => state.loginMovieslice)
+    const { loading, data, error } = loginstate
+
     const [form, setForm] = useState({
         taiKhoan: "",
         matKhau: "",
@@ -38,13 +44,12 @@ export default function Login() {
         e.preventDefault();
 
         if (!validate()) {
-            console.log("Form login lỗi!");
             return;
         }
-
-        console.log("Login Data:", form);
-        alert("Đăng nhập thành công (console log)!");
+        dispatch(loginMovie(form))
     };
+
+    if (data) return <Navigate to="/" />
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -52,6 +57,11 @@ export default function Login() {
                 <h2 className="text-3xl font-bold text-center mb-6">Đăng nhập</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+
+                    {error && (<div className="text-center p-4 mb-4 text-sm text-fg-danger-strong rounded-base bg-danger-soft" role="alert">
+                        {error.response.data.content}
+                    </div>)
+                    }
 
                     {/* Tài khoản */}
                     <div>
@@ -85,7 +95,7 @@ export default function Login() {
                         )}
                     </div>
 
-                    <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    <button className="w-full bg-green-600 text-white py-3 rounded-lg">
                         Đăng nhập
                     </button>
                 </form>

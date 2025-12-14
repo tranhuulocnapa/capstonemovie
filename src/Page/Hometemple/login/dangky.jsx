@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { registerMovie } from "./slice";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { regisMovie } from "./slice";
 import { useDispatch, useSelector } from "react-redux";
+
 
 export default function Register() {
     const dispatch = useDispatch();
-    const { loading, error } = useSelector(state => state.registerMovieslice);
+    const navigate = useNavigate();
+    const { registerSuccess, loading, error } = useSelector(state => state.loginMovieslice);
 
     const [form, setForm] = useState({
         taiKhoan: "",
@@ -23,31 +25,60 @@ export default function Register() {
     };
 
     const validate = () => {
-        let newErrors = {};
+        const newErrors = {};
+
         if (!form.taiKhoan) newErrors.taiKhoan = "Tài khoản không được để trống";
-        if (!form.matKhau) newErrors.matKhau = "Mật khẩu không được để trống";
-        if (!form.email) newErrors.email = "Email không được để trống";
-        if (!form.soDt) newErrors.soDt = "Số điện thoại không được để trống";
+
+        if (!form.matKhau) {
+            newErrors.matKhau = "Mật khẩu không được để trống";
+        } else if (form.matKhau.length < 6) {
+            newErrors.matKhau = "Mật khẩu phải ít nhất 6 ký tự";
+        }
+
+        if (!form.email) {
+            newErrors.email = "Email không được để trống";
+        } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+            newErrors.email = "Email không hợp lệ";
+        }
+
+        if (!form.soDt) {
+            newErrors.soDt = "Số điện thoại không được để trống";
+        } else if (!/^\d{10,11}$/.test(form.soDt)) {
+            newErrors.soDt = "Số điện thoại không hợp lệ (10-11 số)";
+        }
+
         if (!form.hoTen) newErrors.hoTen = "Họ tên không được để trống";
 
         setErrors(newErrors);
+
         return Object.keys(newErrors).length === 0;
     };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!validate()) return;
-
-        console.log("DATA GỬI LÊN API:", form); // <-- đúng
-        dispatch(registerMovie(form));
+        dispatch(regisMovie(form))
     };
+
+    useEffect(() => {
+        if (registerSuccess) {
+            alert("Đăng ký thành công");
+            navigate("/login", { replace: true });
+        }
+    }, [registerSuccess]);
+
+
 
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
             <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
                 <h2 className="text-3xl font-bold text-center mb-6">Đăng ký</h2>
-
+                {error && (<div className="text-center p-4 mb-4 text-sm text-fg-danger-strong rounded-base bg-danger-soft" role="alert">
+                    {error.response.data.content}
+                </div>)
+                }
                 <form onSubmit={handleSubmit} className="space-y-4">
 
                     <div>
@@ -111,7 +142,6 @@ export default function Register() {
                     </button>
                 </form>
 
-                {error && <p className="text-red-600 text-center mt-4">{error}</p>}
 
                 <p className="text-center mt-4">
                     Đã có tài khoản?{" "}

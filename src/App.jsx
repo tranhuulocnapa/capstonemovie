@@ -9,6 +9,8 @@ import Login from './Page/Hometemple/login/dangnhap';
 import Register from './Page/Hometemple/login/dangky';
 import Auth from './Page/Admin/auth';
 import FilmManagement from './Page/Admin/Movide/FilmManagement';
+import Adduser from './Page/Admin/user';
+import Addfilm from './Page/Admin/Managerfilm/Addfilm';
 
 
 function App() {
@@ -28,11 +30,14 @@ function App() {
 
         <Route path="admin" element={<Admin />} >
           <Route path="" element={<FilmManagement />} />
-
+          <Route path="adduser" element={<Adduser />} />
+          <Route path="addfilm" element={<Addfilm />} />
+          <Route path="addfilm/:id" element={<Addfilm />} />
 
         </Route>
 
         <Route path="auth" element={<Auth />} />
+
 
       </Routes>
     </BrowserRouter>

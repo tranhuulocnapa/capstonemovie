@@ -94,9 +94,9 @@ export default function DetailMovie() {
                                 {new Date(movie?.ngayKhoiChieu).toLocaleDateString("vi-VN")}
                             </p>
 
-                            <button className="bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow hover:bg-red-700 transition mt-3">
+                            {/* <button className="bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow hover:bg-red-700 transition mt-3">
                                 🎟 MUA VÉ
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { bookinglMovie, setcomfirmBooking } from "./slice";
 import Seats from "./seats";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 export default function BookingMovie() {
+    const userLogin = useSelector((state) => state.loginMovieslice)
+    if (!userLogin.data) {
+        alert("bạn chưa đăng nhâp")
+        return <Navigate to="/login" />
+    }
     const dispatch = useDispatch();
     const { data, selectedSeats } = useSelector((state) => state.bookingMovieslice);
 
@@ -64,6 +69,7 @@ export default function BookingMovie() {
                                 alert("Bạn chưa chọn ghế!");
                                 return;
                             }
+
                             setOpenModal(true);
                         }}
                     >

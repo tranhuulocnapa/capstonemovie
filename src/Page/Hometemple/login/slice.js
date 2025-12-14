@@ -1,47 +1,96 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../../service/api";
 
+const userlogin = localStorage.getItem("user_login")
+const data = userlogin ? JSON.parse(userlogin) : null
+
 const initialState = {
     loading: false,
-    data: null,
+    data,
     error: null,
+    registerSuccess: false,
 };
-export const registerMovie = createAsyncThunk(
-    "user/registerMovie",
-    async (data, thunkAPI) => {
+export const loginMovie = createAsyncThunk(
+    "user/loginMovie",
+    async (user, { rejectWithValue }) => {
         try {
-            const res = await axios.post(
-                "https://movienew.cybersoft.edu.vn/api/QuanLyNguoiDung/DangKy",
-                data
-            );
-            return res.data;
+            const response = await api.post("QuanLyNguoiDung/DangNhap", user)
+
+            if (response.data.content.maLoaiNguoiDung === "QuanTri") {
+                return rejectWithValue({
+                    response: {
+                        data: {
+                            content: "Hãy đăng nhập bằng tài khoản khách hàng"
+                        }
+                    }
+                })
+            }
+
+            localStorage.setItem("user_login", JSON.stringify(response.data.content))
+
+            return response.data.content;
         } catch (err) {
-            return thunkAPI.rejectWithValue(err.response.data);
+            return rejectWithValue(err);
+        }
+    }
+);
+
+export const regisMovie = createAsyncThunk(
+    "user/registerMovie",
+    async (user, { rejectWithValue }) => {
+        try {
+            const response = await api.post("QuanLyNguoiDung/DangKy", user)
+
+            return response.data.content;
+        } catch (err) {
+            return rejectWithValue(err);
         }
     }
 );
 
 
-const registerMovieslice = createSlice({
-    name: "register",
+const loginMovieslice = createSlice({
+    name: "login",
     initialState,
-    reducers: {},
+    reducers: {
+        logout(state) {
+            state.data = null;
+            localStorage.removeItem("user_login");
+        }
+
+    },
 
     extraReducers: (builder) => {
         builder
-            .addCase(registerMovie.pending, (state) => {
+            .addCase(loginMovie.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registerMovie.fulfilled, (state, action) => {
+            .addCase(loginMovie.fulfilled, (state, action) => {
                 state.loading = false;
                 state.data = action.payload;
             })
-            .addCase(registerMovie.rejected, (state, action) => {
+            .addCase(loginMovie.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            // Register
+            .addCase(regisMovie.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.registerSuccess = false;
+            })
+            .addCase(regisMovie.fulfilled, (state, action) => {
+                state.loading = false;
+                state.registerSuccess = true;
+            })
+            .addCase(regisMovie.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
     },
 });
 
-export default registerMovieslice.reducer;
+export const { logout } = loginMovieslice.actions;
+export default loginMovieslice.reducer;

@@ -1,11 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate, NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../../login/slice";
 
 export default function Navbar() {
     const [openUserMenu, setOpenUserMenu] = useState(false);
     const [openMobileMenu, setOpenMobileMenu] = useState(false);
-
+    const { data } = useSelector((state) => state.loginMovieslice)
+    const dispatch = useDispatch()
+    const navigate = useNavigate();
     const userMenuRef = useRef(null);
+
+    const hanlelogout = () => {
+        dispatch(logout());
+        navigate("/login", { replace: true });
+
+    }
 
     // CLICK OUTSIDE
     useEffect(() => {
@@ -48,13 +58,18 @@ export default function Navbar() {
                         <button
                             onClick={() => setOpenUserMenu(!openUserMenu)}
                             type="button"
-                            className="flex text-sm bg-neutral-primary rounded-full focus:ring-4 focus:ring-neutral-tertiary"
+                            className="flex items-center gap-3 px-3 py-1 bg-neutral-primary rounded-full 
+               hover:bg-neutral-secondary transition focus:ring-4 focus:ring-neutral-tertiary"
                         >
                             <img
-                                className="w-8 h-8 rounded-full"
+                                className="w-9 h-9 rounded-full border"
                                 src="https://cdn.tgdd.vn/GameApp/2/228128/Screentshots/cach-tra-ma-van-don-theo-doi-vi-tri-tren-shopee-228128-logo-03-09-2020.png"
                                 alt="user"
                             />
+
+                            <span className="font-medium text-gray-800 whitespace-nowrap">
+                                {data?.hoTen || ""}
+                            </span>
                         </button>
 
                         {/* Dropdown */}
@@ -63,35 +78,41 @@ export default function Navbar() {
                                 className="absolute top-full right-0 mt-2 z-50 bg-white border rounded-xl shadow-lg w-44"
                             >
                                 <ul className="py-2">
-                                    <li>
-                                        <Link
-                                            to="/login"
-                                            onClick={() => setOpenUserMenu(false)}
-                                            className="block px-4 py-2 hover:bg-gray-100"
-                                        >
-                                            Đăng nhập
-                                        </Link>
-                                    </li>
+                                    {!data && (<>
 
-                                    <li>
-                                        <Link
-                                            to="/register"
-                                            onClick={() => setOpenUserMenu(false)}
-                                            className="block px-4 py-2 hover:bg-gray-100"
-                                        >
-                                            Đăng ký
-                                        </Link>
-                                    </li>
+                                        <li>
+                                            <Link
+                                                to="/login"
+                                                onClick={() => setOpenUserMenu(false)}
+                                                className="block px-4 py-2 hover:bg-gray-100"
+                                            >
+                                                Đăng nhập
+                                            </Link>
+                                        </li>
 
-                                    <li>
-                                        <Link
-                                            to="/"
-                                            onClick={() => setOpenUserMenu(false)}
+                                        <li>
+                                            <Link
+                                                to="/register"
+                                                onClick={() => setOpenUserMenu(false)}
+                                                className="block px-4 py-2 hover:bg-gray-100"
+                                            >
+                                                Đăng ký
+                                            </Link>
+                                        </li>
+
+                                    </>)}
+
+                                    {data && (
+                                        <li onClick={() => {
+                                            hanlelogout()
+                                            setOpenUserMenu(false)
+                                        }}
                                             className="block px-4 py-2 hover:bg-gray-100"
                                         >
                                             Log out
-                                        </Link>
-                                    </li>
+                                        </li>
+                                    )}
+
 
                                 </ul>
                             </div>
@@ -131,6 +152,6 @@ export default function Navbar() {
                 </div>
 
             </div>
-        </nav>
+        </nav >
     );
 }

@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Input, DatePicker, Switch, Button, message } from "antd";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
-import { addFlim, getFilmDetail, updateFilm } from "./slice";
-import { useParams } from "react-router-dom";
-
+import { addFlim, getFilmDetail, resetError, updateFilm } from "./slice";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Addfilm() {
+    const { error } = useSelector((state) => state.addFilmslice)
+    const navigate = useNavigate();
     const [imgPreview, setImgPreview] = useState(null);
     const [imgFile, setImgFile] = useState(null);
     const dispatch = useDispatch();
@@ -59,7 +60,7 @@ export default function Addfilm() {
     };
 
     // ---------------- HANDLE SUBMIT ----------------
-    const handleAdd = () => {
+    const handleAdd = async () => {
         if (!validate()) {
             message.error("Vui lòng kiểm tra lại thông tin!");
             return;
@@ -78,15 +79,20 @@ export default function Addfilm() {
         formData.append("danhGia", film.danhGia);
         formData.append("hinhAnh", imgFile, imgFile.name);
 
-        dispatch(addFlim(formData)); // <--- gửi FormData THẬT
+        try {
+            await dispatch(addFlim(formData)).unwrap();
+            dispatch(resetError());
+            message.success("Thêm phim thành công!");
+            navigate("/admin");
+        } catch (err) {
+            message.error(err.response?.data?.content);
+        }
 
-        message.success("Thêm phim thành công!");
     };
 
     useEffect(() => {
         if (id) {
             dispatch(getFilmDetail(id))
-
         }
 
     }, [id])
@@ -109,19 +115,24 @@ export default function Addfilm() {
         }
     }, [filmDetail]);
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         if (!validate()) {
             message.error("Vui lòng kiểm tra lại thông tin!");
             return;
         }
 
         const formData = new FormData();
-        formData.append("maPhim", id);
+        formData.append("maPhim", Number(id));
         formData.append("tenPhim", film.tenPhim);
         formData.append("trailer", film.trailer);
         formData.append("moTa", film.moTa);
         formData.append("maNhom", film.maNhom);
-        formData.append("ngayKhoiChieu", film.ngayKhoiChieu);
+
+        formData.append(
+            "ngayKhoiChieu",
+            dayjs(film.ngayKhoiChieu, "DD/MM/YYYY").format("DD/MM/YYYY")
+        );
+
         formData.append("sapChieu", film.sapChieu);
         formData.append("dangChieu", film.dangChieu);
         formData.append("hot", film.hot);
@@ -131,9 +142,22 @@ export default function Addfilm() {
             formData.append("hinhAnh", imgFile, imgFile.name);
         }
 
-        dispatch(updateFilm(formData));
-        message.success("Cập nhật phim thành công!");
+        try {
+            await dispatch(updateFilm(formData)).unwrap();
+            dispatch(resetError());
+            message.success("Cập nhật phim thành công!");
+            navigate("/admin");
+        } catch (err) {
+            message.error(err.response?.data?.content);
+        }
+
     }
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetError());
+        };
+    }, []);
 
 
     return (
@@ -141,6 +165,13 @@ export default function Addfilm() {
             <h2 className="text-2xl font-bold mb-8">
                 {id ? "Cập nhật phim" : "Thêm mới phim"}
             </h2>
+
+            <>
+                {error && (<div className="p-4 mb-4 text-sm text-fg-danger-strong rounded-base bg-danger-soft" role="alert">
+                    {error.content}
+                </div>)
+                }
+            </>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                 <div className="space-y-4">

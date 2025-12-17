@@ -11,6 +11,7 @@ import Auth from './Page/Admin/auth';
 import FilmManagement from './Page/Admin/Movide/FilmManagement';
 import Adduser from './Page/Admin/user';
 import Addfilm from './Page/Admin/Managerfilm/Addfilm';
+import CreateShowtime from './Page/Admin/Showtimefilm/CreateShowtime';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="adduser" element={<Adduser />} />
           <Route path="addfilm" element={<Addfilm />} />
           <Route path="addfilm/:id" element={<Addfilm />} />
+          <Route path="films/showtime/:id" element={<CreateShowtime />} />
 
         </Route>
 

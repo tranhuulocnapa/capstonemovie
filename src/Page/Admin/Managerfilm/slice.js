@@ -13,8 +13,8 @@ export const addFlim = createAsyncThunk("film/addfilmslice", async (formData, { 
         const response = await api.post("QuanLyPhim/ThemPhimUploadHinh", formData)
 
         return response.data.content
-    } catch (error) {
-        return rejectWithValue(error)
+    } catch (err) {
+        return rejectWithValue(err.response?.data || err);
     }
 })
 
@@ -47,12 +47,14 @@ export const updateFilm = createAsyncThunk(
     }
 );
 
+
+
 const addFilmslice = createSlice({
     name: "filmslice",
     initialState,
     reducers: {
-        clearFilmDetail: (state) => {
-            state.filmDetail = null;
+        resetError: (state) => {
+            state.error = null;
         },
     },
 
@@ -102,5 +104,5 @@ const addFilmslice = createSlice({
 })
 
 
-export const { clearFilmDetail } = addFilmslice.actions;
+export const { resetError } = addFilmslice.actions;
 export default addFilmslice.reducer

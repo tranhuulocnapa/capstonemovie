@@ -13,7 +13,17 @@ export const film = createAsyncThunk("film/filmslice", async (__, { rejectWithVa
 
         return response.data.content
     } catch (error) {
-        return rejectWithValue(error)
+        return rejectWithValue(error.response?.data || error);
+    }
+})
+
+export const deletefilm = createAsyncThunk("deletefilm/deletefilmslice", async (maPhim, { rejectWithValue }) => {
+    try {
+        const response = await api.delete(`/QuanLyPhim/XoaPhim?MaPhim=${maPhim}`)
+
+        return maPhim;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || error);
     }
 })
 
@@ -32,6 +42,20 @@ const filmslice = createSlice({
                 state.data = action.payload;
             })
             .addCase(film.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(deletefilm.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deletefilm.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = state.data.filter(
+                    (film) => film.maPhim !== action.payload
+                );
+            })
+            .addCase(deletefilm.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

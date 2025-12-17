@@ -7,6 +7,7 @@ import authslice from "./../Page/Admin/auth/slice"
 import adduserslice from "./../Page/Admin/user/slice"
 import filmslice from "./../Page/Admin/Movide/slice"
 import addFilmslice from "./../Page/Admin/Managerfilm/slice"
+import createShowtimeSlice from "./../Page/Admin/Showtimefilm/slice"
 
 const store = configureStore({
     reducer: {
@@ -17,7 +18,8 @@ const store = configureStore({
         authslice,
         adduserslice,
         filmslice,
-        addFilmslice
+        addFilmslice,
+        createShowtimeSlice
 
     },
 }

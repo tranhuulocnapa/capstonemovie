@@ -11,13 +11,6 @@ const initialState = {
 
 export const fetchdata = createAsyncThunk("listmovie", async (__, { rejectWithValue }) => {
     try {
-        // const result = await axios({
-        //     url: "https://movienew.cybersoft.edu.vn/api/QuanLyPhim/LayDanhSachPhim?maNhom=GP01",
-        //     method: "GET",
-        //     headers: {
-        //         TokenCybersoft: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCA5MCIsIkhldEhhblN0cmluZyI6IjI5LzA1LzIwMjYiLCJIZXRIYW5UaW1lIjoiMTc4MDAxMjgwMDAwMCIsIm5iZiI6MTc1MzAzMDgwMCwiZXhwIjoxNzgwMTYwNDAwfQ.KkGRtLpEsgoM4M_TapjOZIzvAwbay3QvXIwwN8XUqWk"
-        //     },
-        // })
         const movies = await api.get("QuanLyPhim/LayDanhSachPhim?maNhom=GP01")
         const cinemaSystems = await api.get("QuanLyRap/LayThongTinHeThongRap")
         const hethongrap = await api.get("QuanLyRap/LayThongTinLichChieuHeThongRap?maNhom=GP01")

@@ -1,16 +1,21 @@
-import { Form, Select, DatePicker, InputNumber, Button, Card, Image, message } from "antd";
+import { Form, Select, DatePicker, InputNumber, Button, Card, Image, message, Space } from "antd";
 import { cinemaCluster, infocinema, showtime } from "./slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getFilmDetail } from "../Managerfilm/slice";
+
+
 
 const CreateShowtime = () => {
+    const navigate = useNavigate();
+    const [form] = Form.useForm();
     const dispatch = useDispatch();
-    const { id } = useParams(); // ID phim từ URL params
+    const { id } = useParams();
     const [maHeThongRap, setMaHeThongRap] = useState("");
-    const [raps, setRaps] = useState([]);
-    const [maCumRap, setMaCumRap] = useState(null); // lưu cụm rạp đã chọn
+
+    const { filmDetail } = useSelector((state) => state.addFilmslice)
 
     const { data, cinemaClusters } = useSelector(
         (state) => state.createShowtimeSlice
@@ -23,15 +28,14 @@ const CreateShowtime = () => {
     useEffect(() => {
         if (maHeThongRap) {
             dispatch(cinemaCluster(maHeThongRap));
-            setRaps([]); // reset rạp khi đổi hệ thống rạp
-            setMaCumRap(null);
+
         }
     }, [maHeThongRap, dispatch]);
 
     const handleshowtime = async (values) => {
         const payload = {
             maPhim: Number(id),
-            maRap: Number(values.maRap),
+            maRap: values.maRap,
             giaVe: Number(values.giaVe),
             ngayChieuGioChieu: dayjs(values.ngayChieuGioChieu).format("DD/MM/YYYY HH:mm:ss"),
         };
@@ -41,37 +45,71 @@ const CreateShowtime = () => {
         try {
             await dispatch(showtime(payload)).unwrap();
             message.success("Tạo lịch chiếu thành công 🎉");
+            navigate("/admin");
         } catch (err) {
             message.error(err?.content || "Tạo lịch chiếu thất bại");
         }
     };
 
+    useEffect(() => {
+        if (id) {
+            dispatch(getFilmDetail(id))
+        }
+
+    }, [id])
+
     return (
-        <div className="w-full px-2 md:px-4">
+        <div className="w-full p-4">
             <Card
                 title={<span className="text-lg font-semibold">🎬 Tạo lịch chiếu</span>}
                 className="w-full shadow-sm rounded-xl"
-                style={{ padding: 24 }}
+                styles={{
+                    body: {
+                        padding: 24,
+                    },
+                }}
             >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Poster */}
-                    <div className="lg:col-span-3 flex justify-center">
-                        <Image
-                            src="https://via.placeholder.com/300x450?text=Movie+Poster"
-                            className="rounded-lg shadow-md"
-                            preview={false}
-                        />
+
+                    <div className="lg:col-span-4 xl:col-span-3 flex justify-center">
+                        <div className="w-full max-w-[260px] text-center">
+                            {/* Tên phim */}
+                            <h2 className="mb-2 text-lg font-semibold flex items-center justify-center gap-2">
+                                🎬 {filmDetail?.tenPhim}
+                            </h2>
+
+                            {/* Poster */}
+                            <Image
+                                src={filmDetail?.hinhAnh}
+                                preview={false}
+                                className="w-full rounded-xl shadow-md object-cover"
+                            />
+                        </div>
                     </div>
 
+
                     {/* Form */}
-                    <div className="lg:col-span-9">
-                        <Form layout="vertical" onFinish={handleshowtime}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Form.Item label="Hệ thống rạp" rules={[{ required: true }]}>
+                    <div className="lg:col-span-8 xl:col-span-9">
+                        <Form
+                            form={form}
+                            layout="vertical"
+                            onFinish={handleshowtime}
+                        >
+                            {/* Hệ thống & Cụm rạp */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Form.Item
+                                    label="Hệ thống rạp"
+                                    name="maHeThongRap"
+                                    rules={[{ required: true, message: "Vui lòng chọn hệ thống rạp" }]}
+                                >
                                     <Select
                                         placeholder="Chọn hệ thống rạp"
                                         size="large"
-                                        onChange={(value) => setMaHeThongRap(value)}
+                                        onChange={(value) => {
+                                            setMaHeThongRap(value);
+                                            form.resetFields(["maRap"]);
+                                        }}
                                     >
                                         {data?.map((rap) => (
                                             <Select.Option
@@ -84,16 +122,15 @@ const CreateShowtime = () => {
                                     </Select>
                                 </Form.Item>
 
-                                <Form.Item label="Cụm rạp" rules={[{ required: true }]}>
+                                <Form.Item
+                                    label="Cụm rạp"
+                                    name="maRap"
+                                    rules={[{ required: true, message: "Vui lòng chọn cụm rạp" }]}
+                                >
                                     <Select
                                         placeholder="Chọn cụm rạp"
                                         size="large"
                                         disabled={!cinemaClusters?.length}
-                                        onChange={(value) => {
-                                            setMaCumRap(value); // lưu cụm rạp
-                                            const selected = cinemaClusters.find(c => c.maCumRap === value);
-                                            setRaps(selected?.danhSachRap || []);
-                                        }}
                                     >
                                         {cinemaClusters?.map((cumRap) => (
                                             <Select.Option
@@ -107,56 +144,85 @@ const CreateShowtime = () => {
                                 </Form.Item>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Giá vé & Ngày giờ */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
                                 <Form.Item
-                                    label="Rạp chiếu"
-                                    name="maRap"
-                                    rules={[{ required: true, message: "Vui lòng chọn rạp" }]}
+                                    label="Giá vé"
+                                    name="giaVe"
+                                    rules={[
+                                        { required: true, message: "Vui lòng nhập giá vé" },
+                                        {
+                                            validator: (_, value) =>
+                                                value > 0
+                                                    ? Promise.resolve()
+                                                    : Promise.reject("Giá vé phải lớn hơn 0"),
+                                        },
+                                    ]}
                                 >
-                                    <Select placeholder="Chọn rạp" size="large" disabled={!raps.length}>
-                                        {raps.map((rap) => (
-                                            <Select.Option
-                                                key={rap.maRap}
-                                                value={Number(rap.maRap)}
-                                            >
-                                                {rap.tenRap}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
+                                    <Space.Compact className="w-full">
+                                        <InputNumber
+                                            className="flex-1"      // 👈 chiếm toàn bộ chiều ngang
+                                            size="large"
+                                            min={1}
+                                            step={1000}
+                                            formatter={(value) =>
+                                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                                            }
+                                            parser={(value) =>
+                                                value.replace(/\./g, "")
+                                            }
+                                            placeholder="Ví dụ: 75.000"
+                                            controls={false}
+                                        />
+
+                                        <div className="
+                                                px-4 
+                                                flex items-center 
+                                                bg-gray-100 
+                                                border 
+                                                border-l-0 
+                                                rounded-r-lg
+                                                whitespace-nowrap
+                                            ">
+                                            VNĐ
+                                        </div>
+                                    </Space.Compact>
+
                                 </Form.Item>
 
+
+
                                 <Form.Item
-                                    label="Giá vé (VNĐ)"
-                                    name="giaVe"
-                                    rules={[{ required: true, message: "Vui lòng nhập giá vé" }]}
+                                    label="Ngày & giờ chiếu"
+                                    name="ngayChieuGioChieu"
+                                    rules={[{ required: true, message: "Vui lòng chọn ngày chiếu" }]}
                                 >
-                                    <InputNumber min={75000} step={5000} size="large" className="w-full" />
+                                    <DatePicker
+                                        showTime
+                                        format="YYYY-MM-DD HH:mm"
+                                        size="large"
+                                        className="w-full"
+                                    />
                                 </Form.Item>
                             </div>
 
-                            <Form.Item
-                                label="Ngày & giờ chiếu"
-                                name="ngayChieuGioChieu"
-                                rules={[{ required: true, message: "Vui lòng chọn ngày chiếu" }]}
-                            >
-                                <DatePicker
-                                    showTime
-                                    format="YYYY-MM-DD HH:mm"
+                            {/* Button */}
+                            <div className="flex justify-end mt-6">
+                                <Button
+                                    type="primary"
                                     size="large"
-                                    className="w-full"
-                                />
-                            </Form.Item>
-
-                            <Form.Item className="pt-4">
-                                <Button type="primary" size="large" htmlType="submit" className="w-full md:w-64">
+                                    htmlType="submit"
+                                    className="px-8 rounded-lg"
+                                >
                                     🎟️ Tạo lịch chiếu
                                 </Button>
-                            </Form.Item>
+                            </div>
                         </Form>
                     </div>
                 </div>
             </Card>
         </div>
+
     );
 };
 

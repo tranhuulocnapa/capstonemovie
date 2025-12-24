@@ -30,6 +30,7 @@ export default function CinemaShowtime() {
 
     return (
         <div className="col-span-6">
+            <h1>mới thay đổi</h1>
             {/* CONTAINER THẬT */}
             <div className="bg-white rounded-2xl shadow-lg border h-full flex flex-col">
 

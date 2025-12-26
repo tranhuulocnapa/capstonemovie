@@ -152,43 +152,29 @@ const CreateShowtime = () => {
                                     rules={[
                                         { required: true, message: "Vui lòng nhập giá vé" },
                                         {
-                                            validator: (_, value) =>
-                                                value > 0
-                                                    ? Promise.resolve()
-                                                    : Promise.reject("Giá vé phải lớn hơn 0"),
+                                            validator: (_, value) => {
+                                                if (value === undefined || value === null) {
+                                                    return Promise.reject("Vui lòng nhập giá vé");
+                                                }
+                                                if (Number(value) <= 0) {
+                                                    return Promise.reject("Giá vé phải lớn hơn 0");
+                                                }
+                                                return Promise.resolve();
+                                            },
                                         },
                                     ]}
                                 >
-                                    <Space.Compact className="w-full">
-                                        <InputNumber
-                                            className="flex-1"      // 👈 chiếm toàn bộ chiều ngang
-                                            size="large"
-                                            min={1}
-                                            step={1000}
-                                            formatter={(value) =>
-                                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                                            }
-                                            parser={(value) =>
-                                                value.replace(/\./g, "")
-                                            }
-                                            placeholder="Ví dụ: 75.000"
-                                            controls={false}
-                                        />
-
-                                        <div className="
-                                                px-4 
-                                                flex items-center 
-                                                bg-gray-100 
-                                                border 
-                                                border-l-0 
-                                                rounded-r-lg
-                                                whitespace-nowrap
-                                            ">
-                                            VNĐ
-                                        </div>
-                                    </Space.Compact>
-
+                                    <InputNumber
+                                        size="large"
+                                        className="w-full"
+                                        min={1}
+                                        step={1000}
+                                        precision={0}
+                                        addonAfter="VNĐ"
+                                        placeholder="Ví dụ: 75000"
+                                    />
                                 </Form.Item>
+
 
 
 

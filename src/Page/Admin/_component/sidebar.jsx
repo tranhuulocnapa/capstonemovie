@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const Sidebar = () => {
     const [openFilms, setOpenFilms] = useState(false);
+    const [openUser, setOpenUser] = useState(false);
     const dispatch = useDispatch()
 
     const handlelogout = () => {
@@ -19,16 +20,44 @@ const Sidebar = () => {
 
             <nav className="flex-1">
                 <ul className="space-y-4">
+
                     <li>
-                        <NavLink
-                            to="adduser"
-                            className={({ isActive }) =>
-                                `block hover:text-yellow-300 ${isActive ? "text-yellow-400 font-bold" : ""}`
-                            }
+                        <button
+                            onClick={() => setOpenUser(!openUser)}
+                            className="w-full text-left hover:text-yellow-300 flex justify-between items-center"
                         >
-                            Users
-                        </NavLink>
+                            <span className="font-semibold">Users</span>
+                            <span>{openFilms ? "▲" : "▼"}</span>
+                        </button>
+
+                        {openUser && (
+                            <ul className="ml-4 mt-2 space-y-2">
+                                <li>
+                                    <NavLink
+                                        to="listuser"
+                                        end
+                                        className={({ isActive }) =>
+                                            `block hover:text-yellow-300 ${isActive ? "text-yellow-400 font-bold" : ""}`
+                                        }
+                                    >
+                                        List user
+                                    </NavLink>
+                                </li>
+
+                                <li>
+                                    <NavLink
+                                        to="adduser"
+                                        className={({ isActive }) =>
+                                            `block hover:text-yellow-300 ${isActive ? "text-yellow-400 font-bold" : ""}`
+                                        }
+                                    >
+                                        Thêm users
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        )}
                     </li>
+
                     <li>
                         <button
                             onClick={() => setOpenFilms(!openFilms)}
@@ -66,9 +95,9 @@ const Sidebar = () => {
                         )}
                     </li>
 
-                    <li>
+                    {/* <li>
                         <a className="hover:text-yellow-300 block" href="#">Showtime</a>
-                    </li>
+                    </li> */}
                 </ul>
             </nav>
 

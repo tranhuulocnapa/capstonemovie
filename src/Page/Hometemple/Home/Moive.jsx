@@ -18,9 +18,9 @@ export default function Moive(props) {
 
                 {/* Buttons */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <button className="px-7 py-2 bg-white text-black font-semibold rounded-xl shadow hover:scale-105 transition">
+                    {/* <button className="px-7 py-2 bg-white text-black font-semibold rounded-xl shadow hover:scale-105 transition">
                         Đặt vé
-                    </button>
+                    </button> */}
 
                     <button className="px-7 py-2 bg-white/10 border border-white text-white font-medium rounded-xl hover:bg-white hover:text-black hover:scale-105 transition">
                         <Link to={`/detail/${data.maPhim}`}>

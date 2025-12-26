@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { adduser } from "./slice";
 import { useDispatch } from "react-redux";
+import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function Adduser() {
+    const navigate = useNavigate();
     const dispatch = useDispatch()
     const [form, setForm] = useState({
         taiKhoan: "",
@@ -68,7 +71,7 @@ export default function Adduser() {
     };
 
     // ✅ validate toàn bộ khi submit
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         let hasError = false;
@@ -84,9 +87,20 @@ export default function Adduser() {
 
         if (hasError) return;
 
-        // ✅ submit data
-        console.log("Submit data:", form);
-        dispatch(adduser(form))
+        // // ✅ submit data
+        // console.log("Submit data:", form);
+        // dispatch(adduser(form))
+
+        try {
+            await dispatch(adduser(form)).unwrap()
+            message.success("Thêm người dùng thành công!");
+            navigate("/admin/listuser");
+        } catch (err) {
+            message.error(err.response?.data?.content);
+        }
+
+
+
     };
 
     return (
